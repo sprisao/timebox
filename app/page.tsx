@@ -17,7 +17,6 @@ export default function Home() {
             <h2>React Icons</h2>
             <HiHeart />
             <HiOutlineBookmark />
-
         </>
 
     )
