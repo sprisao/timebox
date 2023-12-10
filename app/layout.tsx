@@ -7,7 +7,7 @@ import React from "react";
 const inter = Inter({subsets: ['latin']})
 
 export const metadata: Metadata = {
-    title: 'Bruces NextJS Boilerplate',
+    title: 'Timebox',
     description: '%s | Bruces NextJS Boilerplate',
 }
 
