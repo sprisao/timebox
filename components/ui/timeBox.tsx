@@ -18,9 +18,9 @@ export type TItems = {
 
 
 export default function TimeBox({data}: TimeBoxProps) {
-    const [wakeUpTime, setWakeUpTime] = useState(6);
-    const [sleepTime, setSleepTime] = useState(22);
     const [thisData, setThisData] = useState(data)
+    const [wakeUpTime, setWakeUpTime] = useState(thisData.timebox.startTime);
+    const [sleepTime, setSleepTime] = useState(thisData.timebox.bedTime);
     const [items, setItems] = useState<TItems>(
         {
             firstHalf: thisData.timebox.firstHalf,
@@ -54,18 +54,26 @@ export default function TimeBox({data}: TimeBoxProps) {
 
     // --- requestAnimationFrame 초기화 END
 
-    const onDragEnd = ({source, destination}: DropResult) => {
-        if (!destination) return;
+const onDragEnd = ({source, destination}: DropResult) => {
+    if (!destination) return;
 
-        const scourceKey = source.droppableId as TimeBoxStatus;
-        const destinationKey = destination.droppableId as TimeBoxStatus;
+    const sourceKey = source.droppableId as TimeBoxStatus;
+    const destinationKey = destination.droppableId as TimeBoxStatus;
 
-        const _items = JSON.parse(JSON.stringify(items)) as typeof items;
-        const [targetItem] = _items[scourceKey].splice(source.index, 1);
-        _items[destinationKey].splice(destination.index, 0, targetItem);
-        setItems(_items);
+    const _items = JSON.parse(JSON.stringify(items)) as typeof items;
+    const [targetItem] = _items[sourceKey].splice(source.index, 1);
+
+    if (sourceKey === 'firstHalf' && destinationKey === 'secondHalf' && destination.index >= source.index) {
+        _items[sourceKey].splice(source.index, 0, {task: ''});
     }
 
+    if (sourceKey === 'secondHalf' && destinationKey === 'firstHalf' && destination.index > source.index) {
+        _items[sourceKey].splice(source.index, 0, {task: ''});
+    }
+
+    _items[destinationKey].splice(destination.index, 0, targetItem);
+    setItems(_items);
+}
     const handleSave = async () => {
         console.log(`timeBoxData: ${JSON.stringify(thisData)}`)
         await fetch('/api/save', {
@@ -103,8 +111,8 @@ export default function TimeBox({data}: TimeBoxProps) {
                                     >
                                         <span>{key.toLocaleUpperCase()}</span>
                                         {items[key as TimeBoxStatus].map((item, index) => (
-                                            <Draggable draggableId={index + item.task} index={index}
-                                                       key={index + item.task}>
+                                            <Draggable draggableId={index + item.task + key} index={index}
+                                                       key={index + item.task + key}>
                                                 {(provided, snapshot) => (
                                                     <div
                                                         ref={provided.innerRef}
