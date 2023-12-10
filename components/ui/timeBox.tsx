@@ -1,12 +1,12 @@
 'use client'
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import {DataType} from "@/lib/type";
 
 interface TimeBoxProps {
     data: DataType
 }
 
-export default function TimeBox({ data }: TimeBoxProps) {
+export default function TimeBox({data}: TimeBoxProps) {
     const [wakeUpTime, setWakeUpTime] = useState(6);
     const [sleepTime, setSleepTime] = useState(22);
     const [thisData, setThisData] = useState(data);
@@ -19,22 +19,23 @@ export default function TimeBox({ data }: TimeBoxProps) {
         setSleepTime(Number(event.target.value));
     };
 
-const handleInputChange = (index: number, field: string, event: React.ChangeEvent<HTMLInputElement>) => {
-    const newData = {...thisData};
-    let timeBoxItem = newData.timebox.find(item => item.time === `${index}:00`);
+    const handleInputChange = (index: number, field: string, event: React.ChangeEvent<HTMLInputElement>) => {
+        const newData = {...thisData};
+        let timeBoxItem = newData.timebox.find(item => item.time === `${index}:00`);
 
-    if (!timeBoxItem) {
-        timeBoxItem = {
-            time: `${index}:00`,
-            firstHalf: "",
-            secondHalf: ""
-        };
-        newData.timebox.push(timeBoxItem);
-    }
+        if (!timeBoxItem) {
+            timeBoxItem = {
+                time: `${index}:00`,
+                firstHalf: "",
+                secondHalf: ""
+            };
+            newData.timebox.push(timeBoxItem);
+        }
 
-    (timeBoxItem as any)[field] = event.target.value;
-    setThisData(newData);
-};
+        (timeBoxItem as any)[field] = event.target.value;
+        setThisData(newData);
+    };
+
     const handleSave = async () => {
         console.log(`timeBoxData: ${JSON.stringify(thisData)}`)
         await fetch('/api/save', {
@@ -46,9 +47,20 @@ const handleInputChange = (index: number, field: string, event: React.ChangeEven
         });
     };
 
+    useEffect(() => {
+        const controller = new AbortController();
+        (async () => {
+                await handleSave();
+            }
+        )();
+        return () => {
+            controller.abort();
+        };
+    }, [thisData]);
+
     const generateTableRows = () => {
         let rows = [];
-        for(let i = wakeUpTime; i < sleepTime; i++) {
+        for (let i = wakeUpTime; i < sleepTime; i++) {
             const timeBoxItem = thisData.timebox.find(item => item.time === `${i}:00`);
             rows.push(
                 <tr key={i}>
@@ -99,7 +111,6 @@ const handleInputChange = (index: number, field: string, event: React.ChangeEven
                 {generateTableRows()}
                 </tbody>
             </table>
-            <button onClick={handleSave}>저장</button>
         </div>
     )
 }

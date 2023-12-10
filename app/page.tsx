@@ -1,5 +1,6 @@
-import TimeBox from "@/components/ui/timebox";
+import TimeBox from "@/components/ui/timeBox";
 import {getData} from "@/lib/fetch";
+import BrainDump from "@/components/ui/brainDump";
 
 export default async function Home() {
     /*today's date in korea*/
@@ -21,15 +22,7 @@ export default async function Home() {
             </div>
             <div className="grid grid-cols-2 gap-1">
                 <div className="flex flex-col bg-amber-200">
-                    <div className="flex flex-col bg-pink-300">
-                        <h1>Brain Dump</h1>
-                        <div className="">
-{/*                          <textarea*/}
-{/*  value={}*/}
-{/*  onChange={event => this.setState({ value: event.target.value })}*/}
-{/*/>*/}
-                        </div>
-                    </div>
+                    <BrainDump data={data}/>
                     <div className="bg-purple-200">
                         <h1>Top Priority</h1>
                         <div>
