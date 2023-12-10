@@ -1,44 +1,70 @@
 'use client'
 import React, { useState, useEffect } from "react";
+import {DataType} from "@/lib/type";
 
-export default function TimeBox({data}) {
+interface TimeBoxProps {
+    data: DataType
+}
+
+export default function TimeBox({ data }: TimeBoxProps) {
     const [wakeUpTime, setWakeUpTime] = useState(6);
     const [sleepTime, setSleepTime] = useState(22);
-    const [timeBoxData, setTimeBoxData] = useState(data)
+    const [thisData, setThisData] = useState(data);
 
-    const handleWakeUpTimeChange = (event) => {
-        setWakeUpTime(event.target.value);
+    const handleWakeUpTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setWakeUpTime(Number(event.target.value));
     };
 
-    const handleSleepTimeChange = (event) => {
-        setSleepTime(event.target.value);
+    const handleSleepTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSleepTime(Number(event.target.value));
     };
 
-    const handleInputChange = (hour, task, event) => {
-        setTimeBoxData(prevData => ({
-            ...prevData,
-            [hour]: { ...prevData[hour], [task]: event.target.value }
-        }));
+const handleInputChange = (index: number, field: string, event: React.ChangeEvent<HTMLInputElement>) => {
+    const newData = {...thisData};
+    let timeBoxItem = newData.timebox.find(item => item.time === `${index}:00`);
+
+    if (!timeBoxItem) {
+        timeBoxItem = {
+            time: `${index}:00`,
+            firstHalf: "",
+            secondHalf: ""
+        };
+        newData.timebox.push(timeBoxItem);
+    }
+
+    (timeBoxItem as any)[field] = event.target.value;
+    setThisData(newData);
+};
+    const handleSave = async () => {
+        console.log(`timeBoxData: ${JSON.stringify(thisData)}`)
+        await fetch('/api/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(thisData)
+        });
     };
 
     const generateTableRows = () => {
         let rows = [];
         for(let i = wakeUpTime; i < sleepTime; i++) {
+            const timeBoxItem = thisData.timebox.find(item => item.time === `${i}:00`);
             rows.push(
                 <tr key={i}>
                     <td>{i}:00</td>
                     <td>
                         <input
                             type="text"
-                            value={timeBoxData[i]?.task1 || ""}
-                            onChange={event => handleInputChange(i, "task1", event)}
+                            value={timeBoxItem?.firstHalf || ""}
+                            onChange={event => handleInputChange(i, "firstHalf", event)}
                         />
                     </td>
                     <td>
                         <input
                             type="text"
-                            value={timeBoxData[i]?.task2 || ""}
-                            onChange={event => handleInputChange(i, "task2", event)}
+                            value={timeBoxItem?.secondHalf || ""}
+                            onChange={event => handleInputChange(i, "secondHalf", event)}
                         />
                     </td>
                 </tr>
@@ -73,6 +99,7 @@ export default function TimeBox({data}) {
                 {generateTableRows()}
                 </tbody>
             </table>
+            <button onClick={handleSave}>저장</button>
         </div>
     )
 }

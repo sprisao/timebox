@@ -24,9 +24,10 @@ export default async function Home() {
                     <div className="flex flex-col bg-pink-300">
                         <h1>Brain Dump</h1>
                         <div className="">
-                            <textarea className="w-max" value={
-                                data.brainDump
-                            }></textarea>
+{/*                          <textarea*/}
+{/*  value={}*/}
+{/*  onChange={event => this.setState({ value: event.target.value })}*/}
+{/*/>*/}
                         </div>
                     </div>
                     <div className="bg-purple-200">
