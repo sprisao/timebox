@@ -1,96 +1,63 @@
 {
   "date": "2023-12-10 00:00:00",
-  "brainDump": "sssalkjsdfdsfdfssdasodfhsdkjf\nsldkfjdkfjslf\nsldkfjsdlkjfd\nsldfkjsdlkfj\nlsdkjfsldkfj\n;alsdkfj;sldkfjsa;ldfj",
+  "brainDump": "sssalkjsdfdsfdfssdasodfhsdkjf\nsldkfjdkfjslf\nsldkfjsdlkjfd\nsldfkjsdlkfj\nlsdkjfsldkfj\n;alsdkfj;sldkfjsa;ldfjsdfdsf\n\nsd",
   "topPriorities": {
     "priority1": "I'm a top priority",
     "priority2": "I'm a top priority",
     "priority3": "I'm a top priority"
   },
-  "timebox": [
-    {
-      "time": "5:00",
-      "firstHalf": "I'm a first half",
-      "secondHalf": "I'm a second half"
-    },
-    {
-      "time": "6:00",
-      "firstHalf": "I'm a first half",
-      "secondHalf": "I'm a second half"
-    },
-    {
-      "time": "7:00",
-      "firstHalf": "I'm a first half",
-      "secondHalf": "I'm a second half"
-    },
-    {
-      "time": "8:00",
-      "firstHalf": "I'm a first half",
-      "secondHalf": "I'm a second half"
-    },
-    {
-      "time": "9:00",
-      "firstHalf": "I'm a first half",
-      "secondHalf": "I'm a second half"
-    },
-    {
-      "time": "10:00",
-      "firstHalf": "I'm a sdㄴㅇㄹ",
-      "secondHalf": "I'm a second half"
-    },
-    {
-      "time": "11:00",
-      "firstHalf": "I'm a first half",
-      "secondHalf": "I'm a second half"
-    },
-    {
-      "time": "12:00",
-      "firstHalf": "I'm a first half",
-      "secondHalf": "I'm a second half"
-    },
-    {
-      "time": "13:00",
-      "firstHalf": "I'm a fsdsdfdslkfj",
-      "secondHalf": "I'm a second half"
-    },
-    {
-      "time": "14:00",
-      "firstHalf": "ㄴ애렁ㄴ리ㅓㅇㄴ리ㅓ",
-      "secondHalf": "I'm a second half"
-    },
-    {
-      "time": "15:00",
-      "firstHalf": "I'm a first half",
-      "secondHalf": "I'm a second half"
-    },
-    {
-      "time": "16:00",
-      "firstHalf": "I'm a first half",
-      "secondHalf": "I'm a second half"
-    },
-    {
-      "time": "17:00",
-      "firstHalf": "sdfdsfsfdsf",
-      "secondHalf": "sdfsdfdsf"
-    },
-    {
-      "time": "19:00",
-      "firstHalf": "11123123123123231231321",
-      "secondHalf": "12321"
-    },
-    {
-      "time": "18:00",
-      "firstHalf": "12321313",
-      "secondHalf": "123"
-    },
-    {
-      "time": "20:00",
-      "firstHalf": "1123123",
-      "secondHalf": "123231"
-    },
-    {
-      "time": "21:00",
-      "firstHalf": "1231232323",
-      "secondHalf": "121231232"
-    }
-  ]
+  "timebox": {
+    "startTime": 0,
+    "bedTime": 23,
+    "firstHalf": [
+      {"task": ""},
+      {"task": ""},
+      {"task": ""},
+      {"task": ""},
+      {"task": ""},
+      {"task": "I'm a first half"},
+      {"task": "I'm a first half"},
+      {"task": "I'm a first half"},
+      {"task": "I'm a first half"},
+      {"task": "I'm a first half"},
+      {"task": "I'm a sdㄴㅇㄹ"},
+      {"task": "I'm a first half"},
+      {"task": "I'm a first half"},
+      {"task": "I'm a fsdsdfdslkfj"},
+      {"task": "ㄴ애렁ㄴ리ㅓㅇㄴ리ㅓ"},
+      {"task": "I'm a first half"},
+      {"task": "I'm a first half"},
+      {"task": "sdfdsfsfdsf"},
+      {"task": "12321313"},
+      {"task": "1123123"},
+      {"task": "1231232323"},
+      {"task": "123123"},
+      {"task": "123123"}
+    ],
+    "secondHalf": [
+      {"task": ""},
+      {"task": ""},
+      {"task": ""},
+      {"task": ""},
+      {"task": ""},
+      {"task": "I'm a second half"},
+      {"task": "I'm a second half"},
+      {"task": "I'm a second half"},
+      {"task": "I'm a second half"},
+      {"task": "I'm a second half"},
+      {"task": "I'm a second half"},
+      {"task": "I'm a second half"},
+      {"task": "I'm a second half"},
+      {"task": "I'm a second half"},
+      {"task": "I'm a second half"},
+      {"task": "I'm a second half"},
+      {"task": "I'm a second half"},
+      {"task": "sdfsdfdsf"},
+      {"task": "123"},
+      {"task": "123231"},
+      {"task": "121231232"},
+      {"task": "123123"},
+      {"task": "123123"}
+    ]
+  }
 }

@@ -70,7 +70,7 @@
 // ]
 // }
 
-export type DataType ={
+export type DataType = {
     date: string;
     brainDump: string;
     topPriorities: {
@@ -79,8 +79,13 @@ export type DataType ={
         priority3: string;
     };
     timebox: {
-        time: string;
-        firstHalf: string;
-        secondHalf: string;
-    }[];
+        startTime: number;
+        bedTime: number;
+        firstHalf: {
+            task: string
+        }[];
+        secondHalf: {
+            task: string;
+        }[];
+    };
 }

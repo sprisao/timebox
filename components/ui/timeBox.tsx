@@ -9,41 +9,32 @@ interface TimeBoxProps {
 }
 
 export type TimeBoxStatus = 'firstHalf' | 'secondHalf';
-export type TimeBoxItem = {
-    time: string;
-    task: string;
-}
 
 export type TItems = {
-    [key in TimeBoxStatus]: TimeBoxItem[];
+    [key in TimeBoxStatus]: {
+        task: string
+    }[]
 };
 
 
 export default function TimeBox({data}: TimeBoxProps) {
+    const [wakeUpTime, setWakeUpTime] = useState(6);
+    const [sleepTime, setSleepTime] = useState(22);
     const [thisData, setThisData] = useState(data)
     const [items, setItems] = useState<TItems>(
         {
-            firstHalf: thisData.timebox.map((timeData) => {
-                    const item: TimeBoxItem = {
-                        time: timeData.time,
-                        task: timeData.firstHalf,
-                    }
-                    return item
-
-                }
-            )
-            ,
-            secondHalf: thisData.timebox.map((timeData) => {
-                    const item: TimeBoxItem = {
-                        time: timeData.time,
-                        task: timeData.secondHalf,
-                    }
-                    return item
-
-                }
-            )
+            firstHalf: thisData.timebox.firstHalf,
+            secondHalf: thisData.timebox.secondHalf
         }
     )
+
+    const handleWakeUpTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setWakeUpTime(Number(event.target.value));
+    };
+
+    const handleSleepTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSleepTime(Number(event.target.value));
+    };
 
     // --- requestAnimationFrame 초기화
     const [enabled, setEnabled] = useState(false);
@@ -60,7 +51,9 @@ export default function TimeBox({data}: TimeBoxProps) {
     if (!enabled) {
         return null;
     }
+
     // --- requestAnimationFrame 초기화 END
+
     const onDragEnd = ({source, destination}: DropResult) => {
         if (!destination) return;
 
@@ -73,17 +66,28 @@ export default function TimeBox({data}: TimeBoxProps) {
         setItems(_items);
     }
 
+    const handleSave = async () => {
+        console.log(`timeBoxData: ${JSON.stringify(thisData)}`)
+        await fetch('/api/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(thisData)
+        });
+    };
+
     return (
         <div className="bg-amber-200">
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="flex">
                     <div>
                         <span>Time</span>
-                        {thisData.timebox.map((timeData) => (
-                            <div>
-                                <span>{timeData.time}</span>
-                            </div>
-                        ))}
+                        {/*{thisData.timebox.map((timeData, index) => (*/}
+                        {/*    <div key={index}>*/}
+                        {/*        <span>{timeData.time}</span>*/}
+                        {/*    </div>*/}
+                        {/*))}*/}
                     </div>
 
                     <div className="grid grid-cols-2">
@@ -99,8 +103,8 @@ export default function TimeBox({data}: TimeBoxProps) {
                                     >
                                         <span>{key.toLocaleUpperCase()}</span>
                                         {items[key as TimeBoxStatus].map((item, index) => (
-                                            <Draggable draggableId={item.time + item.task} index={index}
-                                                       key={item.time + item.task}>
+                                            <Draggable draggableId={index + item.task} index={index}
+                                                       key={index + item.task}>
                                                 {(provided, snapshot) => (
                                                     <div
                                                         ref={provided.innerRef}
@@ -108,6 +112,7 @@ export default function TimeBox({data}: TimeBoxProps) {
                                                         {...provided.dragHandleProps}
                                                         className="bg-blue-200"
                                                     >
+                                                        <span>{index}</span>
                                                         <span>{item.task}</span>
                                                     </div>
                                                 )}
