@@ -1,6 +1,8 @@
 import TimeBox from "@/components/ui/timeBox";
 import {getData} from "@/lib/fetch";
 import BrainDump from "@/components/ui/brainDump";
+import QuoteApp from "@/components/ui/example";
+import TodoPage from "@/components/ui/test";
 
 export default async function Home() {
     /*today's date in korea*/
@@ -35,6 +37,7 @@ export default async function Home() {
                 <div>
                     <TimeBox data={data}/>
                 </div>
+                <TodoPage/>
             </div>
         </div>
     )

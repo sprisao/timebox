@@ -1,116 +1,128 @@
 'use client'
-import React, {useState, useEffect} from "react";
 import {DataType} from "@/lib/type";
+import {useEffect, useState} from "react";
+import {DragDropContext, Draggable, Droppable, DropResult} from "react-beautiful-dnd";
+import {$} from "@/utils";
 
 interface TimeBoxProps {
     data: DataType
 }
 
+export type TimeBoxStatus = 'firstHalf' | 'secondHalf';
+export type TimeBoxItem = {
+    time: string;
+    task: string;
+}
+
+export type TItems = {
+    [key in TimeBoxStatus]: TimeBoxItem[];
+};
+
+
 export default function TimeBox({data}: TimeBoxProps) {
-    const [wakeUpTime, setWakeUpTime] = useState(6);
-    const [sleepTime, setSleepTime] = useState(22);
-    const [thisData, setThisData] = useState(data);
+    const [thisData, setThisData] = useState(data)
+    const [items, setItems] = useState<TItems>(
+        {
+            firstHalf: thisData.timebox.map((timeData) => {
+                    const item: TimeBoxItem = {
+                        time: timeData.time,
+                        task: timeData.firstHalf,
+                    }
+                    return item
 
-    const handleWakeUpTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setWakeUpTime(Number(event.target.value));
-    };
+                }
+            )
+            ,
+            secondHalf: thisData.timebox.map((timeData) => {
+                    const item: TimeBoxItem = {
+                        time: timeData.time,
+                        task: timeData.secondHalf,
+                    }
+                    return item
 
-    const handleSleepTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSleepTime(Number(event.target.value));
-    };
-
-    const handleInputChange = (index: number, field: string, event: React.ChangeEvent<HTMLInputElement>) => {
-        const newData = {...thisData};
-        let timeBoxItem = newData.timebox.find(item => item.time === `${index}:00`);
-
-        if (!timeBoxItem) {
-            timeBoxItem = {
-                time: `${index}:00`,
-                firstHalf: "",
-                secondHalf: ""
-            };
-            newData.timebox.push(timeBoxItem);
+                }
+            )
         }
+    )
 
-        (timeBoxItem as any)[field] = event.target.value;
-        setThisData(newData);
-    };
-
-    const handleSave = async () => {
-        console.log(`timeBoxData: ${JSON.stringify(thisData)}`)
-        await fetch('/api/save', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(thisData)
-        });
-    };
+    // --- requestAnimationFrame 초기화
+    const [enabled, setEnabled] = useState(false);
 
     useEffect(() => {
-        const controller = new AbortController();
-        (async () => {
-                await handleSave();
-            }
-        )();
-        return () => {
-            controller.abort();
-        };
-    }, [thisData]);
+        const animation = requestAnimationFrame(() => setEnabled(true));
 
-    const generateTableRows = () => {
-        let rows = [];
-        for (let i = wakeUpTime; i < sleepTime; i++) {
-            const timeBoxItem = thisData.timebox.find(item => item.time === `${i}:00`);
-            rows.push(
-                <tr key={i}>
-                    <td>{i}:00</td>
-                    <td>
-                        <input
-                            type="text"
-                            value={timeBoxItem?.firstHalf || ""}
-                            onChange={event => handleInputChange(i, "firstHalf", event)}
-                        />
-                    </td>
-                    <td>
-                        <input
-                            type="text"
-                            value={timeBoxItem?.secondHalf || ""}
-                            onChange={event => handleInputChange(i, "secondHalf", event)}
-                        />
-                    </td>
-                </tr>
-            );
-        }
-        return rows;
-    };
+        return () => {
+            cancelAnimationFrame(animation);
+            setEnabled(false);
+        };
+    }, []);
+
+    if (!enabled) {
+        return null;
+    }
+    // --- requestAnimationFrame 초기화 END
+    const onDragEnd = ({source, destination}: DropResult) => {
+        if (!destination) return;
+
+        const scourceKey = source.droppableId as TimeBoxStatus;
+        const destinationKey = destination.droppableId as TimeBoxStatus;
+
+        const _items = JSON.parse(JSON.stringify(items)) as typeof items;
+        const [targetItem] = _items[scourceKey].splice(source.index, 1);
+        _items[destinationKey].splice(destination.index, 0, targetItem);
+        setItems(_items);
+    }
 
     return (
-        <div className="flex flex-col bg-amber-500">
-            <h1>TimeBox</h1>
-            <div className="flex flex-row">
-                <label>
-                    기상시간:
-                    <input placeholder="기상시간: " type="number" value={wakeUpTime}
-                           onChange={handleWakeUpTimeChange}/>
-                </label>
-                <label>
-                    취침예정 시간:
-                    <input type="number" value={sleepTime} onChange={handleSleepTimeChange}/>
-                </label>
-            </div>
-            <table className="">
-                <thead>
-                <tr className="border-b">
-                    <th>Time</th>
-                    <th>30</th>
-                    <th>59</th>
-                </tr>
-                </thead>
-                <tbody>
-                {generateTableRows()}
-                </tbody>
-            </table>
+        <div className="bg-amber-200">
+            <DragDropContext onDragEnd={onDragEnd}>
+                <div className="flex">
+                    <div>
+                        <span>Time</span>
+                        {thisData.timebox.map((timeData) => (
+                            <div>
+                                <span>{timeData.time}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="grid grid-cols-2">
+                        {Object.keys(items).map((key) => (
+                            <Droppable key={key} droppableId={key}>
+                                {(provided, snapshot) => (
+                                    <div
+                                        ref={provided.innerRef}
+                                        {...provided.droppableProps}
+                                        className={$("flex flex-col gap-3 rounded-xl bg-gray-200 p-4 ring-1 ring-gray-300 transition-shadow dark:bg-[#000000]",
+                                            snapshot.isDraggingOver ? 'shadow-lg' : 'shadow',)}
+
+                                    >
+                                        <span>{key.toLocaleUpperCase()}</span>
+                                        {items[key as TimeBoxStatus].map((item, index) => (
+                                            <Draggable draggableId={item.time + item.task} index={index}
+                                                       key={item.time + item.task}>
+                                                {(provided, snapshot) => (
+                                                    <div
+                                                        ref={provided.innerRef}
+                                                        {...provided.draggableProps}
+                                                        {...provided.dragHandleProps}
+                                                        className="bg-blue-200"
+                                                    >
+                                                        <span>{item.task}</span>
+                                                    </div>
+                                                )}
+                                            </Draggable>
+                                        ))}
+                                        {provided.placeholder}
+                                    </div>
+                                )}
+                            </Droppable>))
+                        }
+                    </div>
+                </div>
+
+            </DragDropContext>
         </div>
     )
+
 }
